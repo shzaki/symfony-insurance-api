@@ -17,23 +17,22 @@ class Tariff
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $monthlyPrice = null;
+    private string $monthlyPrice = '0.00';
 
     #[ORM\Column]
-    private ?int $coverageAmount = null;
+    private int $coverageAmount = 0;
 
     #[ORM\Column(nullable: true)]
     private ?int $deductible = null;
 
     #[ORM\Column]
-    private ?int $score = null;
+    private int $score = 0;
 
     #[ORM\Column]
-    private ?bool $isActive = null;
-
+    private bool $isActive = false;
 
     #[ORM\ManyToOne(inversedBy: 'tariffs')]
     #[ORM\JoinColumn(nullable: false)]
@@ -55,7 +54,7 @@ class Tariff
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -67,7 +66,7 @@ class Tariff
         return $this;
     }
 
-    public function getMonthlyPrice(): ?string
+    public function getMonthlyPrice(): string
     {
         return $this->monthlyPrice;
     }
@@ -79,7 +78,7 @@ class Tariff
         return $this;
     }
 
-    public function getCoverageAmount(): ?int
+    public function getCoverageAmount(): int
     {
         return $this->coverageAmount;
     }
@@ -103,7 +102,7 @@ class Tariff
         return $this;
     }
 
-    public function getScore(): ?int
+    public function getScore(): int
     {
         return $this->score;
     }
@@ -115,7 +114,7 @@ class Tariff
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function isActive(): bool
     {
         return $this->isActive;
     }
@@ -160,7 +159,6 @@ class Tariff
     public function removeComparisonResult(ComparisonResult $comparisonResult): static
     {
         if ($this->comparisonResults->removeElement($comparisonResult)) {
-            // set the owning side to null (unless already changed)
             if ($comparisonResult->getTariff() === $this) {
                 $comparisonResult->setTariff(null);
             }

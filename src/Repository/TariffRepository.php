@@ -19,11 +19,24 @@ class TariffRepository extends ServiceEntityRepository
     /**
      * @return Tariff[]
      */
-    public function findBestActiveTariffs(
+    public function findActiveTariffs(
         string $productType = 'building',
         ?string $providerCode = null,
         int $limit = 50,
+        int $page = 1,
+        string $sort = 'score',
+        string $direction = 'desc',
     ): array {
+        $sortMap = [
+            'score' => 'tariff.score',
+            'price' => 'tariff.monthlyPrice',
+            'name' => 'tariff.name',
+        ];
+
+        $sortField = $sortMap[$sort] ?? $sortMap['score'];
+        $sortDirection = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+        $offset = ($page - 1) * $limit;
+
         $queryBuilder = $this->createQueryBuilder('tariff')
             ->select('tariff', 'product', 'provider')
             ->innerJoin('tariff.product', 'product')
@@ -42,8 +55,9 @@ class TariffRepository extends ServiceEntityRepository
         }
 
         return $queryBuilder
-            ->orderBy('tariff.score', 'DESC')
-            ->addOrderBy('tariff.monthlyPrice', 'ASC')
+            ->orderBy($sortField, $sortDirection)
+            ->addOrderBy('tariff.id', 'ASC')
+            ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();

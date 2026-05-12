@@ -15,22 +15,22 @@ class ComparisonResult
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $monthlyPrice = null;
+    private string $monthlyPrice = '0.00';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $yearlyPrice = null;
 
     #[ORM\Column]
-    private ?int $rankingScore = null;
+    private int $rankingScore = 0;
 
     #[ORM\Column(length: 20)]
-    private ?string $riskLevel = null;
+    private string $riskLevel = '';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $recommendationReason = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'comparisonResults')]
     #[ORM\JoinColumn(nullable: false)]
@@ -44,12 +44,13 @@ class ComparisonResult
     {
         $this->createdAt = new \DateTimeImmutable();
     }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getMonthlyPrice(): ?string
+    public function getMonthlyPrice(): string
     {
         return $this->monthlyPrice;
     }
@@ -73,7 +74,7 @@ class ComparisonResult
         return $this;
     }
 
-    public function getRankingScore(): ?int
+    public function getRankingScore(): int
     {
         return $this->rankingScore;
     }
@@ -85,7 +86,7 @@ class ComparisonResult
         return $this;
     }
 
-    public function getRiskLevel(): ?string
+    public function getRiskLevel(): string
     {
         return $this->riskLevel;
     }
@@ -109,16 +110,9 @@ class ComparisonResult
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getComparisonRequest(): ?ComparisonRequest

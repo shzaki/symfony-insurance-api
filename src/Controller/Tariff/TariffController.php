@@ -2,9 +2,8 @@
 
 namespace App\Controller\Tariff;
 
-use App\Application\Tariff\Dto\Response\TariffResponseDto;
-use App\Application\Tariff\Service\TariffRecommendationService;
-use App\Application\Tariff\Dto\Request\BestTariffsRequestDto;
+use App\Application\Tariff\Service\TariffQueryService;
+use App\Application\Tariff\Dto\Request\TariffQueryRequestDto;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,18 +12,18 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class TariffController extends AbstractController
 {
-    #[Route('/api/tariffs/best', name: 'api_tariffs_best', methods: ['GET'])]
-    public function best(
-        Request $request,
-        TariffRecommendationService $tariffRecommendationService,
+    #[Route('/api/tariffs', name: 'api_tariffs_list', methods: ['GET'])]
+    public function list(
+        Request            $request,
+        TariffQueryService $tariffQueryService,
         ValidatorInterface $validator,
     ): JsonResponse {
-        $requestDto = BestTariffsRequestDto::fromQuery($request->query->all());
+        $tariffRequestDto = TariffQueryRequestDto::fromQuery($request->query->all());
 
-        $violations = $validator->validate($requestDto);
+        $violations = $validator->validate($tariffRequestDto);
 
         if (count($violations) > 0) {
-            return $this->json([
+            return new JsonResponse([
                 'errors' => array_map(
                     static fn($violation) => [
                         'field' => $violation->getPropertyPath(),
@@ -35,13 +34,8 @@ final class TariffController extends AbstractController
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        $tariffs = $tariffRecommendationService->findBestTariffs($requestDto);
+        $tariffResponseDtos = $tariffQueryService->getTariffs($tariffRequestDto);
 
-        $data = array_map(
-            static fn($tariff) => TariffResponseDto::fromEntity($tariff),
-            $tariffs,
-        );
-
-        return new JsonResponse($data);
+        return new JsonResponse($tariffResponseDtos);
     }
 }

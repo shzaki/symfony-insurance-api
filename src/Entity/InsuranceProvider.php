@@ -16,13 +16,13 @@ class InsuranceProvider
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
-    #[ORM\Column(length: 50)]
-    private ?string $code = null;
+    #[ORM\Column(length: 50, unique: true)]
+    private string $code = '';
 
     #[ORM\Column]
-    private ?bool $isActive = null;
+    private bool $isActive = false;
 
     /**
      * @var Collection<int, InsuranceProduct>
@@ -40,7 +40,7 @@ class InsuranceProvider
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -52,7 +52,7 @@ class InsuranceProvider
         return $this;
     }
 
-    public function getCode(): ?string
+    public function getCode(): string
     {
         return $this->code;
     }
@@ -64,7 +64,7 @@ class InsuranceProvider
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function isActive(): bool
     {
         return $this->isActive;
     }

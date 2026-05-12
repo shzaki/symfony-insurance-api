@@ -16,25 +16,25 @@ class ComparisonRequest
     private ?int $id = null;
 
     #[ORM\Column(length: 20)]
-    private ?string $zipcode = null;
+    private string $zipcode = '';
 
     #[ORM\Column]
-    private ?int $buildingYear = null;
+    private int $buildingYear = 0;
 
     #[ORM\Column]
-    private ?int $livingArea = null;
+    private int $livingArea = 0;
 
     #[ORM\Column(length: 50)]
-    private ?string $buildingType = null;
+    private string $buildingType = '';
 
     #[ORM\Column]
-    private ?bool $hasGarage = null;
+    private bool $hasGarage = false;
 
     #[ORM\Column]
-    private ?bool $hasSolarPanels = null;
+    private bool $hasSolarPanels = false;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     /**
      * @var Collection<int, ComparisonResult>
@@ -53,7 +53,7 @@ class ComparisonRequest
         return $this->id;
     }
 
-    public function getZipcode(): ?string
+    public function getZipcode(): string
     {
         return $this->zipcode;
     }
@@ -65,7 +65,7 @@ class ComparisonRequest
         return $this;
     }
 
-    public function getBuildingYear(): ?int
+    public function getBuildingYear(): int
     {
         return $this->buildingYear;
     }
@@ -77,7 +77,7 @@ class ComparisonRequest
         return $this;
     }
 
-    public function getLivingArea(): ?int
+    public function getLivingArea(): int
     {
         return $this->livingArea;
     }
@@ -89,7 +89,7 @@ class ComparisonRequest
         return $this;
     }
 
-    public function getBuildingType(): ?string
+    public function getBuildingType(): string
     {
         return $this->buildingType;
     }
@@ -101,7 +101,7 @@ class ComparisonRequest
         return $this;
     }
 
-    public function hasGarage(): ?bool
+    public function hasGarage(): bool
     {
         return $this->hasGarage;
     }
@@ -113,7 +113,7 @@ class ComparisonRequest
         return $this;
     }
 
-    public function hasSolarPanels(): ?bool
+    public function hasSolarPanels(): bool
     {
         return $this->hasSolarPanels;
     }
@@ -125,16 +125,9 @@ class ComparisonRequest
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     /**
@@ -158,7 +151,6 @@ class ComparisonRequest
     public function removeComparisonResult(ComparisonResult $comparisonResult): static
     {
         if ($this->comparisonResults->removeElement($comparisonResult)) {
-            // set the owning side to null (unless already changed)
             if ($comparisonResult->getComparisonRequest() === $this) {
                 $comparisonResult->setComparisonRequest(null);
             }

@@ -6,9 +6,6 @@ use App\Entity\InsuranceProduct;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<InsuranceProduct>
- */
 class InsuranceProductRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,28 +13,37 @@ class InsuranceProductRepository extends ServiceEntityRepository
         parent::__construct($registry, InsuranceProduct::class);
     }
 
-    //    /**
-    //     * @return InsuranceProduct[] Returns an array of InsuranceProduct objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return InsuranceProduct[]
+     */
+    public function findAvailableProducts(): array
+    {
+        return $this->createQueryBuilder('product')
+            ->select('product', 'provider')
+            ->innerJoin('product.provider', 'provider')
+            ->andWhere('product.isActive = :active')
+            ->andWhere('provider.isActive = :active')
+            ->setParameter('active', true)
+            ->orderBy('product.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?InsuranceProduct
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @return string[]
+     */
+    public function findAvailableProductTypes(): array
+    {
+        $rows = $this->createQueryBuilder('product')
+            ->select('DISTINCT product.type AS type')
+            ->innerJoin('product.provider', 'provider')
+            ->andWhere('product.isActive = :active')
+            ->andWhere('provider.isActive = :active')
+            ->setParameter('active', true)
+            ->orderBy('product.type', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($rows, 'type');
+    }
 }

@@ -30,6 +30,7 @@ final class TariffResponseDtoTest extends TestCase
 
         $dto = TariffResponseDto::fromEntity($tariff);
 
+        self::assertSame(1, $dto->id);
         self::assertSame('Premium', $dto->name);
         self::assertSame('39.90', $dto->monthlyPrice);
         self::assertSame(1000000, $dto->coverageAmount);
@@ -38,6 +39,7 @@ final class TariffResponseDtoTest extends TestCase
         self::assertSame('Premium Building Insurance', $dto->productName);
         self::assertSame('Allianz', $dto->providerName);
     }
+
     private static function setEntityId(object $entity, int $id): void
     {
         $reflectionProperty = new \ReflectionProperty($entity, 'id');

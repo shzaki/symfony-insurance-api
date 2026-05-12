@@ -17,16 +17,16 @@ class InsuranceProduct
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(length: 50)]
-    private ?string $type = null;
+    private string $type = '';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?bool $isActive = null;
+    private bool $isActive = false;
 
     #[ORM\ManyToOne(inversedBy: 'insuranceProducts')]
     #[ORM\JoinColumn(nullable: false)]
@@ -48,7 +48,7 @@ class InsuranceProduct
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -60,7 +60,7 @@ class InsuranceProduct
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): string
     {
         return $this->type;
     }
@@ -84,7 +84,7 @@ class InsuranceProduct
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function isActive(): bool
     {
         return $this->isActive;
     }
