@@ -20,11 +20,14 @@ final readonly class TariffResponseDto
 
     public static function fromEntity(Tariff $tariff): self
     {
-        $product = $tariff->getProduct();
-        $provider = $product->getProvider();
+        $product = $tariff->getProduct()
+            ?? throw new \LogicException('Tariff has no product');
+
+        $provider = $product->getProvider()
+            ?? throw new \LogicException('Product has no provider');
 
         return new self(
-            id: $tariff->getId(),
+            id: (int) $tariff->getId(),
             name: $tariff->getName(),
             monthlyPrice: $tariff->getMonthlyPrice(),
             coverageAmount: $tariff->getCoverageAmount(),
