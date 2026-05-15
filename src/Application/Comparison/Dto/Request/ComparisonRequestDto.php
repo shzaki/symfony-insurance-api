@@ -2,6 +2,7 @@
 
 namespace App\Application\Comparison\Dto\Request;
 
+use App\Validator\Constraints\NotFutureYear;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class ComparisonRequestDto
@@ -19,7 +20,8 @@ final readonly class ComparisonRequestDto
         public string $zipcode,
 
         #[Assert\NotBlank]
-        #[Assert\Range(min: 1800, max: 2025)]
+        #[Assert\Range(min: 1800)]
+        #[NotFutureYear]
         public int $buildingYear,
 
         #[Assert\NotBlank]

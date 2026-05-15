@@ -13,6 +13,7 @@ final class ProductTypesApiTest extends IntegrationTestCase
         $provider = new InsuranceProvider();
         $provider->setName('Allianz');
         $provider->setCode('allianz');
+        $provider->setIsActive(true);
 
         $product = new InsuranceProduct();
         $product->setName('Building Insurance');
