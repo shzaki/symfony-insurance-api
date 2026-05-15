@@ -63,6 +63,9 @@ symfony server:start
 
 ## Architecture
 
+![Architecture Overview](docs/architecture.png)
+
+
 The project follows a **layered architecture**: Controllers → Application Services → Repositories → Entities.
 
 **Why this structure:**
