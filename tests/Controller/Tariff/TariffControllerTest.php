@@ -9,6 +9,7 @@ use App\Entity\InsuranceProduct;
 use App\Entity\InsuranceProvider;
 use App\Entity\Tariff;
 use App\Repository\TariffRepository;
+use App\Tests\Traits\EntityIdTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +19,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class TariffControllerTest extends TestCase
 {
+    use EntityIdTrait;
+
     public function testBestTariffsReturnsSuccessfulJsonResponse(): void
     {
         $tariff = self::createTariff();
@@ -87,6 +90,34 @@ final class TariffControllerTest extends TestCase
         self::assertSame(JsonResponse::HTTP_OK, $response->getStatusCode());
     }
 
+    public function testGetReturnsSuccessfulJsonResponse(): void
+    {
+        $tariff = self::createTariff();
+
+        $tariffRepository = $this->createMock(TariffRepository::class);
+        $tariffRepository
+            ->expects($this->once())
+            ->method('findActiveTariffById')
+            ->with(1)
+            ->willReturn($tariff);
+
+        $tariffQueryService = new TariffQueryService($tariffRepository);
+
+        $controller = new TariffController();
+
+        $response = $controller->get(1, $tariffQueryService);
+
+        self::assertInstanceOf(JsonResponse::class, $response);
+        self::assertSame(JsonResponse::HTTP_OK, $response->getStatusCode());
+
+        $data = json_decode((string) $response->getContent(), true);
+
+        self::assertSame('Premium', $data['name']);
+        self::assertSame('39.90', $data['monthlyPrice']);
+        self::assertSame('Allianz', $data['providerName']);
+        self::assertSame('Premium Building Insurance', $data['productName']);
+    }
+
     public function testBestTariffsReturnsBadRequestWhenValidationFails(): void
     {
         $tariffRepository = $this->createMock(TariffRepository::class);
@@ -152,11 +183,5 @@ final class TariffControllerTest extends TestCase
         $tariff->setProduct($product);
 
         return $tariff;
-    }
-
-    private static function setEntityId(object $entity, int $id): void
-    {
-        $reflectionProperty = new \ReflectionProperty($entity, 'id');
-        $reflectionProperty->setValue($entity, $id);
     }
 }

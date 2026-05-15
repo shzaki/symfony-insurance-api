@@ -6,10 +6,13 @@ use App\Application\Tariff\Dto\Response\TariffResponseDto;
 use App\Entity\InsuranceProduct;
 use App\Entity\InsuranceProvider;
 use App\Entity\Tariff;
+use App\Tests\Traits\EntityIdTrait;
 use PHPUnit\Framework\TestCase;
 
 final class TariffResponseDtoTest extends TestCase
 {
+    use EntityIdTrait;
+
     public function testItMapsTariffEntityToResponseDto(): void
     {
         $provider = new InsuranceProvider();
@@ -40,9 +43,39 @@ final class TariffResponseDtoTest extends TestCase
         self::assertSame('Allianz', $dto->providerName);
     }
 
-    private static function setEntityId(object $entity, int $id): void
+    public function testItThrowsExceptionWhenTariffHasNoProduct(): void
     {
-        $reflectionProperty = new \ReflectionProperty($entity, 'id');
-        $reflectionProperty->setValue($entity, $id);
+        $tariff = new Tariff();
+        self::setEntityId($tariff, 1);
+        $tariff->setName('Premium');
+        $tariff->setMonthlyPrice('39.90');
+        $tariff->setCoverageAmount(1000000);
+        $tariff->setDeductible(250);
+        $tariff->setScore(95);
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Tariff has no product');
+
+        TariffResponseDto::fromEntity($tariff);
+    }
+
+    public function testItThrowsExceptionWhenProductHasNoProvider(): void
+    {
+        $product = new InsuranceProduct();
+        $product->setName('Premium Building Insurance');
+
+        $tariff = new Tariff();
+        self::setEntityId($tariff, 1);
+        $tariff->setName('Premium');
+        $tariff->setMonthlyPrice('39.90');
+        $tariff->setCoverageAmount(1000000);
+        $tariff->setDeductible(250);
+        $tariff->setScore(95);
+        $tariff->setProduct($product);
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Product has no provider');
+
+        TariffResponseDto::fromEntity($tariff);
     }
 }

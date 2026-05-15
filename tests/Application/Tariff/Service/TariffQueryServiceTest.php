@@ -9,10 +9,14 @@ use App\Entity\InsuranceProduct;
 use App\Entity\InsuranceProvider;
 use App\Application\Tariff\Dto\Response\TariffResponseDto;
 use App\Repository\TariffRepository;
+use App\Application\Tariff\Exception\TariffNotFoundException;
+use App\Tests\Traits\EntityIdTrait;
 use PHPUnit\Framework\TestCase;
 
 final class TariffQueryServiceTest extends TestCase
 {
+    use EntityIdTrait;
+
     public function testItReturnsBestTariffsFromRepository(): void
     {
         $tariffs = [
@@ -72,6 +76,45 @@ final class TariffQueryServiceTest extends TestCase
         self::assertSame('Premium', $result[0]->name);
     }
 
+    public function testItReturnsTariffById(): void
+    {
+        $tariff = self::createTariff(1, 'Premium');
+
+        $tariffRepository = $this->createMock(TariffRepository::class);
+
+        $tariffRepository
+            ->expects($this->once())
+            ->method('findActiveTariffById')
+            ->with(1)
+            ->willReturn($tariff);
+
+        $service = new TariffQueryService($tariffRepository);
+
+        $result = $service->getTariffById(1);
+
+        self::assertInstanceOf(TariffResponseDto::class, $result);
+        self::assertSame('Premium', $result->name);
+        self::assertSame('Allianz', $result->providerName);
+    }
+
+    public function testItThrowsExceptionWhenTariffIsNotFound(): void
+    {
+        $tariffRepository = $this->createMock(TariffRepository::class);
+
+        $tariffRepository
+            ->expects($this->once())
+            ->method('findActiveTariffById')
+            ->with(999)
+            ->willReturn(null);
+
+        $service = new TariffQueryService($tariffRepository);
+
+        $this->expectException(TariffNotFoundException::class);
+        $this->expectExceptionMessage('Tariff with id 999 was not found.');
+
+        $service->getTariffById(999);
+    }
+
     private static function createTariff(int $id, string $name): Tariff
     {
         $provider = new InsuranceProvider();
@@ -91,11 +134,5 @@ final class TariffQueryServiceTest extends TestCase
         $tariff->setProduct($product);
 
         return $tariff;
-    }
-
-    private static function setEntityId(object $entity, int $id): void
-    {
-        $reflectionProperty = new \ReflectionProperty($entity, 'id');
-        $reflectionProperty->setValue($entity, $id);
     }
 }

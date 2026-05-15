@@ -7,12 +7,15 @@ use App\Application\Product\Service\ProductCatalogService;
 use App\Entity\InsuranceProduct;
 use App\Entity\InsuranceProvider;
 use App\Repository\InsuranceProductRepository;
+use App\Tests\Traits\EntityIdTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 final class ProductCatalogServiceTest extends TestCase
 {
+    use EntityIdTrait;
+
     public function testItReturnsAvailableProductsMappedToDtos(): void
     {
         $provider = new InsuranceProvider();
@@ -137,7 +140,7 @@ final class ProductCatalogServiceTest extends TestCase
 
     public function testItInvalidatesProductCache(): void
     {
-        $repository = $this->createMock(InsuranceProductRepository::class);
+        $repository = $this->createStub(InsuranceProductRepository::class);
 
         $cache = $this->createMock(CacheInterface::class);
         $cache
@@ -155,11 +158,5 @@ final class ProductCatalogServiceTest extends TestCase
         $service = new ProductCatalogService($cache, $repository);
 
         $service->invalidateCatalogCache();
-    }
-
-    private static function setEntityId(object $entity, int $id): void
-    {
-        $reflectionProperty = new \ReflectionProperty($entity, 'id');
-        $reflectionProperty->setValue($entity, $id);
     }
 }
