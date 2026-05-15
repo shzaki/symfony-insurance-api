@@ -4,6 +4,7 @@ namespace App\Application\Tariff\Service;
 
 use App\Application\Tariff\Dto\Request\TariffQueryRequestDto;
 use App\Application\Tariff\Dto\Response\TariffResponseDto;
+use App\Application\Tariff\Exception\TariffNotFoundException;
 use App\Repository\TariffRepository;
 
 final readonly class TariffQueryService
@@ -31,5 +32,16 @@ final readonly class TariffQueryService
             static fn($tariff) => TariffResponseDto::fromEntity($tariff),
             $tariffs,
         );
+    }
+
+    public function getTariffById(int $id): TariffResponseDto
+    {
+        $tariff = $this->tariffRepository->findActiveTariffById($id);
+
+        if ($tariff === null) {
+            throw new TariffNotFoundException($id);
+        }
+
+        return TariffResponseDto::fromEntity($tariff);
     }
 }

@@ -62,4 +62,18 @@ class TariffRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findActiveTariffById(int $id): ?Tariff
+    {
+        return $this->createQueryBuilder('tariff')
+            ->select('tariff', 'product', 'provider')
+            ->innerJoin('tariff.product', 'product')
+            ->innerJoin('product.provider', 'provider')
+            ->andWhere('tariff.id = :id')
+            ->andWhere('tariff.isActive = :active')
+            ->setParameter('id', $id)
+            ->setParameter('active', true)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

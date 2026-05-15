@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class TariffController extends AbstractController
 {
-    #[Route('/api/tariffs', name: 'api_tariffs_list', methods: ['GET'])]
+    #[Route('/api/tariffs', name: 'api_tariffs', methods: ['GET'])]
     public function list(
         Request            $request,
         TariffQueryService $tariffQueryService,
@@ -37,5 +37,11 @@ final class TariffController extends AbstractController
         $tariffResponseDtos = $tariffQueryService->getTariffs($tariffRequestDto);
 
         return new JsonResponse($tariffResponseDtos);
+    }
+
+    #[Route('/api/tariffs/{id}', name: 'api_tariffs_get', methods: ['GET'])]
+    public function get(int $id, TariffQueryService $tariffQueryService): JsonResponse
+    {
+        return new JsonResponse($tariffQueryService->getTariffById($id));
     }
 }
